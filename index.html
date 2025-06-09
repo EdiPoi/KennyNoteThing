@@ -10,11 +10,13 @@
             color: #eee;
         }
         #file_area {
-            border: 5px solid blue;
+            border: 5px dashed #4444ff;
             height:500px;
             margin: 20px;
             border-radius: 20px;
             padding:20px;
+            background-color: #111144;
+            font-size: 20px;
         }
 
     </style>
@@ -32,10 +34,55 @@
     function dragOverHandler(e){
         
     }
-    function dropHandler(e){
+    function dropHandler(e) {
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+
+    let fileData = []
+
+    reader.onload = function(event) {
+        const text = event.target.result;
+
+        const lines = text.trim().split('\n');
+        const headers = lines[0].split('\t');
+
+        const json = lines.slice(1).map(line => {
+            const values = line.split('\t');
+            const obj = {};
+            headers.forEach((header, index) => {
+                obj[header.trim()] = values[index]?.trim();
+            });
+            return obj;
+        });
+
+
+        let relevantLines = []
+        let output = ""
+        let lowestLength = Infinity;
+        for(let line of json){
+            lowestLength = Math.min(lowestLength,parseFloat(line.duration_qb))
+            if(line.staff == 1 && line.voice == 1){
+                relevantLines.push({length:parseFloat(line.duration_qb),tpc:parseInt(line.tpc)});
+            }
+
+        }
+        console.log(relevantLines)
         
-        console.log(e);
-    }
+        for(let line of relevantLines){
+            for(let i = 0; i < line.length/lowestLength; i++){
+                output += line.tpc+"\n";
+            }
+        }
+        output = output.slice(0,-1)
+        console.log(output)
+        saveTextAsFile("output.csv",output)
+
+        document.getElementById("file_area").innerHTML = "done!"
+    };
+
+    reader.readAsText(file);
+}
 
 
     window.addEventListener("dragover", function(e) {
@@ -45,4 +92,22 @@
     window.addEventListener("drop", function(e) {
         e.preventDefault();
     }, false);
+
+
+    
+    function saveTextAsFile(filename, textContent) {
+    const blob = new Blob([textContent], { type: 'text/plain' });
+    const link = document.createElement('a');
+
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+
+    // Trigger the download
+    document.body.appendChild(link);
+    link.click();
+
+    // Clean up
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+}
 </script>
