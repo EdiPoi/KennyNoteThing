@@ -30,11 +30,19 @@
 
 <script>
     function dragOverHandler(e){
-        // console.log(e);
+        
     }
     function dropHandler(e){
-        e.preventDefault();
-        e.stopPropagation();
+        
         console.log(e);
     }
+
+
+    window.addEventListener("dragover", function(e) {
+        e.preventDefault();
+    }, false);
+
+    window.addEventListener("drop", function(e) {
+        e.preventDefault();
+    }, false);
 </script>
