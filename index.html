@@ -5,10 +5,36 @@
     <title>Kenny Note Thing</title>
 
     <style>
-        .body{background-color:#000;}
+        body{
+            background-color:#111;
+            color: #eee;
+        }
+        #file_area {
+            border: 5px solid blue;
+            height:500px;
+            margin: 20px;
+            border-radius: 20px;
+            padding:20px;
+        }
+
     </style>
 </head>
 <body>
     <h1>Kenny Note Thing</h1>
+    <div id="file_area" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+        <p>Drag file within this area</p>
+    </div>
+
 </body>
 </html>
+
+<script>
+    function dragOverHandler(e){
+        // console.log(e);
+    }
+    function dropHandler(e){
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(e);
+    }
+</script>
